@@ -52,22 +52,14 @@ public class KruskalsMSTDriver {
 		adjGraph.addEdge('A', 'Q', 2);
 		adjGraph.addEdge('Q', 'G', 2);
 		adjGraph.addEdge('G', 'P', 2);
+		
+		// test edge used to verify MST calculation is correct commented out
+		//adjGraph.addEdge('C', 'P', 1);
 
 		// test of checkEdge function
 		System.out.println("checkEdge Function Test (\'C\',\'A\'): " + adjGraph.checkEdge('C', 'A'));
 		System.out.println("checkEdge Function Test (\'C\',\'T\'): " + adjGraph.checkEdge('C', 'T'));
 		System.out.println("checkEdge Function Test (\'T\',\'C\'): " + adjGraph.checkEdge('T', 'C'));
-		
-//		// create variable for starting Node data value
-//		char startNode = 'R';
-//
-//		// print out of Kruskal's MST Calculation
-//		System.out.println("Calculated MST from Node \'" + startNode + "\' = " + adjGraph.primMST(startNode));
-//		
-//		// second test using different start node (should equal same value as previous node)
-//		startNode = 'f';
-//		System.out.println("Calculated MST from Node \'" + startNode + "\' = " + adjGraph.primMST(startNode));
-		
 
 		// print of graph
 		adjGraph.print();

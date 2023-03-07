@@ -338,6 +338,8 @@ public class Graph {
 	}
 
 	// START OF KRUSKAL'S MST METHODS/ALGORITHM
+	
+	
 	private LinkedList<Node> getEdgeList() {
 		
 		// create an empty list to hold added srcNodes (node with weight of 0)
@@ -417,115 +419,6 @@ public class Graph {
 		return edgeList;
 	}
 	
-	private boolean checkCycle(LinkedList<Node> visited, Node srcNode) {
-		
-//		if (visited.size() == 0) {
-//			// visited linkedList update to hold visited nodes
-//			return false;
-//		} else {
-			
-			LinkedList<Node>visitedCycle = visited;
-			System.out.println();
-			for (int k = 0; k < visitedCycle.size(); k++) {
-				System.out.print(visitedCycle.get(k).data + "(" + visitedCycle.get(k).weight + "), ");
-			}
-			visitedCycle.add(srcNode);
-			
-			if (nodeLists.size() > 0) {
-				// create nodeLists(graph adjacency list) iterator
-				ListIterator<LinkedList<Node>> nodeListsIter = nodeLists.listIterator();
-				
-				// find srcNode list in nodeLists and assign to currentList
-				LinkedList<Node> currentList = nodeListsIter.next();
-				
-				Node currentNode = currentList.getFirst();
-				
-				while ((Character.toLowerCase(currentNode.data) != Character.toLowerCase(srcNode.data)) && nodeListsIter.hasNext()) {
-					currentList = nodeListsIter.next();
-					currentNode = currentList.getFirst();
-				}
-				
-				// iterate through srcNode list edges (each node after index 0 becomes dstNode)
-				for (int i = 1; i < currentList.size(); i++) {
-					Node dstNode = currentList.get(i);
-					boolean dstVisited = false;
-					// if dstNode not in visited list, call checkCycle(visited, dstNode) is true, return true
-					for (int j = 0; j < visitedCycle.size(); j++) {
-						if (dstNode.data == visitedCycle.get(j).data) {
-							dstVisited = true;
-							//return true;
-						}
-					}
-					
-					if (dstVisited == false) {
-						if (checkCycle(visited, dstNode)) {
-							return true;
-						}
-					// else if dstNode is visited and dstNode is not equal to srcNode
-					// found a back edge, return true
-					} else if (dstVisited == true && (dstNode.data == srcNode.data && dstNode.weight != srcNode.weight)) {
-						return true;
-					}
-					
-				}
-
-			}
-//		}
-		// no back edges found
-		return false;
-	}
-	
-	private boolean unionCycle(ArrayList<LinkedList<Node>> unionNodeLists, Node dstNode) {
-
-		// create variable for dstNode parent
-		Node dstParent = dstNode.parent;
-		
-		// create parenttList variable to store parentNode current list
-		LinkedList<Node> parentList = unionNodeLists.get(0);
-		
-		// find unionNodeList for dstParent
-		for (int i = 0; i < unionNodeLists.size(); i++) {
-			parentList = unionNodeLists.get(i);
-			if (parentList.getFirst().data == dstParent.data) {
-				break;
-			}
-		}
-		
-		// check if dstNode.data in any unionNodeLists  node list
-		boolean dstNodeFound = false;
-		
-		for (int i = 0; i < unionNodeLists.size(); i ++) {
-			for (int j = 1; j < unionNodeLists.get(i).size(); j++) {
-				if (dstNode.data == unionNodeLists.get(i).get(j).data) {
-					dstNodeFound = true;
-				}
-			}
-		}
-		
-		// check is dstParent.data is in any unionNodeLists node list
-		boolean dstParentFound = false;
-		
-		for (int i = 0; i < unionNodeLists.size(); i ++) {
-			for (int j = 1; j < unionNodeLists.get(i).size(); j++) {
-				if (dstParent.data == unionNodeLists.get(i).get(j).data) {
-					dstParentFound = true;
-				}
-			}
-		}
-		
-		if (dstNodeFound == false || dstParentFound == false) {
-			for (int i = 0; i < unionNodeLists.size(); i++) {
-				if (unionNodeLists.get(i).getFirst().data == dstParent.data) {
-					unionNodeLists.get(i).add(dstNode);
-					break;
-				}
-			}
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
 	public int kruskalMST() {
 
 		// create calcMST variable to return
@@ -536,9 +429,6 @@ public class Graph {
 		
 		// get list of edges using private class method getEdgeList()
 		LinkedList<Node> edgeList = getEdgeList();
-		
-		// create empty list of visited nodes/edges for cycle checking
-		LinkedList<Node> visitedNodes = new LinkedList<Node>();
 		
 		// create new array list of linkedList nodes for unionCycle checks
 		ArrayList<LinkedList<Node>> unionNodeLists = new ArrayList<>();
@@ -562,16 +452,98 @@ public class Graph {
 			
 			int min = findMin(edgeList);
 			Node minEdge = edgeList.get(min);
-			boolean minEdgeCycle = unionCycle(unionNodeLists, minEdge);
-			System.out.println();
-			System.out.println("Edge checked: " + minEdge.data + "(" + minEdge.weight + ")" + minEdge.parent.data + " = " + minEdgeCycle);
-			if (minEdgeCycle == false) {
-				calcMST += minEdge.weight;
-				edgeCounter++;
+			
+			// create variable for dstNode parent
+			Node dstParent = minEdge.parent;
+			
+			// creation of boolean variable for cycle being found
+			boolean cycleFound = false;
+			
+			// find unionNodeList for minEdgeParent
+			int unionNodeListIndex = 0;
+			for (int i = 0; i < unionNodeLists.size(); i++) {
+				if (unionNodeLists.get(i).getFirst().data == minEdge.parent.data) {
+					unionNodeListIndex = i;
+					break;
+				}
 			}
 			
+			// check if dstNode.data in any unionNodeLists  node list
+			boolean dstNodeFound = false;
+			int dstNodeIndex = 0;
 			
+			for (int i = 0; i < unionNodeLists.size(); i ++) {
+				for (int j = 1; j < unionNodeLists.get(i).size(); j++) {
+					if (minEdge.data == unionNodeLists.get(i).get(j).data) {
+						dstNodeFound = true;
+						dstNodeIndex = i;
+						// check to ensure minEdge.parent.data does not equal data of set parent node
+						if (unionNodeLists.get(i).getFirst().data == minEdge.parent.data) {
+							cycleFound = true;
+						}
+						// check if dstNode.parent.data exists in list
+						for(int k = 1; k < unionNodeLists.get(i).size(); k++) {
+							if (minEdge.parent.data == unionNodeLists.get(i).get(k).data) {
+								cycleFound = true;
+								break;
+							}
+						}
+					}
+					if (cycleFound) {
+						break;
+					}
+				}
+				if (cycleFound) {
+					break;
+				}
+			}
 			
+			// check is dstParent.data is in any unionNodeLists node list
+			boolean dstParentFound = false;
+			int dstParentIndex = 0;
+			
+			for (int i = 0; i < unionNodeLists.size(); i ++) {
+				for (int j = 1; j < unionNodeLists.get(i).size(); j++) {
+					if (dstParent.data == unionNodeLists.get(i).get(j).data) {
+						dstParentFound = true;
+						dstParentIndex = i;
+						break;
+					}
+				}
+				if (dstParentFound) {
+					break;
+				}
+			}
+			
+			if (cycleFound) {
+				System.out.println(minEdge.data + "(" + minEdge.weight + ")" + minEdge.parent.data + " EDGE SKIPPED");
+			}else if (!dstNodeFound && dstParentFound) {
+				unionNodeLists.get(dstParentIndex).add(minEdge);
+				calcMST += minEdge.weight;
+				edgeCounter++;
+				System.out.println();
+				System.out.println(minEdge.data + "(" + minEdge.weight + ")" + minEdge.parent.data + " Edge added:");
+			} else if (dstNodeFound && dstParentFound) {
+				unionNodeLists.get(dstNodeIndex).addAll(unionNodeLists.get(dstParentIndex));
+				calcMST += minEdge.weight;
+				edgeCounter++;
+				System.out.println();
+				System.out.println(minEdge.data + "(" + minEdge.weight + ")" + minEdge.parent.data + " Edge added:");
+			} else if (!dstNodeFound && !dstParentFound) {
+				unionNodeLists.get(unionNodeListIndex).add(minEdge);
+				calcMST += minEdge.weight;
+				edgeCounter++;
+				System.out.println();
+				System.out.println(minEdge.data + "(" + minEdge.weight + ")" + minEdge.parent.data + " Edge added:");
+			} else if (dstNodeFound && !dstParentFound) {
+				unionNodeLists.get(dstNodeIndex).add(minEdge);
+				calcMST += minEdge.weight;
+				edgeCounter++;
+				System.out.println();
+				System.out.println(minEdge.data + "(" + minEdge.weight + ")" + minEdge.parent.data + " Edge added:");
+			}
+			
+			// remove minEdge from edgeList
 			edgeList.remove(edgeList.get(findMin(edgeList)));
 		}
 		return calcMST;
@@ -588,7 +560,7 @@ public class Graph {
 		Node parent;
 
 		/**
-		 * Creates a Node with a default weight of 0. Only called when adding vertices
+		 * Creates a Node with a default weight of 0 and parent set to null. Only called when adding vertices
 		 * to graph
 		 * 
 		 * @param data - Node data letter/name
@@ -600,8 +572,8 @@ public class Graph {
 		}
 
 		/**
-		 * Creates an adjacency node with the weight of the edge that gets added to a
-		 * LinkedList via the addEdge method
+		 * Creates an adjacency node with the weight of the edge and a null parent
+		 * that gets added to a LinkedList via the addEdge method
 		 * 
 		 * @param data
 		 * @param weight - Node data letter/name
