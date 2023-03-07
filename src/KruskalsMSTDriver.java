@@ -52,9 +52,9 @@ public class KruskalsMSTDriver {
 		adjGraph.addEdge('A', 'Q', 2);
 		adjGraph.addEdge('Q', 'G', 2);
 		adjGraph.addEdge('G', 'P', 2);
-		
+
 		// test edge used to verify MST calculation is correct commented out
-		//adjGraph.addEdge('C', 'P', 1);
+		// adjGraph.addEdge('C', 'P', 1);
 
 		// test of checkEdge function
 		System.out.println("checkEdge Function Test (\'C\',\'A\'): " + adjGraph.checkEdge('C', 'A'));
@@ -63,7 +63,7 @@ public class KruskalsMSTDriver {
 
 		// print of graph
 		adjGraph.print();
-		
+
 		System.out.println(("Kruskal MST: " + adjGraph.kruskalMST()));
 	}
 

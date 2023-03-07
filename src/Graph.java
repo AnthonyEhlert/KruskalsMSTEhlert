@@ -47,7 +47,7 @@ public class Graph {
 		node.setParent(node);
 		currentList.add(node);
 		nodeLists.add(currentList);
-		//node.setParent(node);
+		// node.setParent(node);
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class Graph {
 		// dstNode = address of node to link to = alist.get(dst).get(0)
 		// .get(0) grabs the first node contained in LinkedList (aka head node)
 		Node dstNode = new Node(dst, weight);
-		
+
 		// set parentNode of dstNode to currentNode
 		dstNode.setParent(currentNode);
 
@@ -97,7 +97,7 @@ public class Graph {
 
 		// adds node to tail of current LinkedList
 		Node srcNode = new Node(src, weight);
-		
+
 		// set parentNode of srcNode top currentNode
 		srcNode.setParent(currentNode);
 
@@ -113,7 +113,7 @@ public class Graph {
 	 * @return
 	 */
 	public boolean checkEdge(char src, char dst) {
-		
+
 		if (nodeLists.size() > 0) {
 			ListIterator<LinkedList<Node>> nodeListsIter = nodeLists.listIterator();
 
@@ -128,7 +128,7 @@ public class Graph {
 				currentList = nodeListsIter.next();
 				currentNode = currentList.getFirst();
 			}
-	
+
 			// iterate over current linkedList and check for a node that matches the
 			// destination node data
 			for (Node node : currentList) {
@@ -146,7 +146,7 @@ public class Graph {
 	public void print() {
 		for (LinkedList<Node> currentList : nodeLists) {
 			for (Node node : currentList) {
-				System.out.print(node.data + "(" + node.weight + "), Parent: " + node.parent.data + " -> ");
+				System.out.print(node.data + "(" + node.weight + ") -> ");
 			}
 			System.out.println();
 		}
@@ -188,160 +188,15 @@ public class Graph {
 		return minNodeIndex;
 	}
 
-	/**
-	 * This method looks at the current a current node's adjacent nodes and one by
-	 * one verifies that the adjacent nodes have not been visited or are not
-	 * currently contained in the current adjacentNodes list. If no match in either
-	 * list is found, then the current node is added to the adjacentNodes list.
-	 * After all of the current node's adjacent nodes have been examined, the
-	 * updated adjacentNodes list is returned.
-	 * 
-	 * @param nodeListToAdd - list of nodes to be added to adjNodes list (if
-	 *                      possible)
-	 * @param visited       - current list of visited nodes
-	 * @param adjNodeList   - current list of adjacent nodes
-	 * @return - updated list with all current adjacent nodes that have not been
-	 *         visited
-	 */
-	private LinkedList<Node> addNodes(LinkedList<Node> nodeListToAdd, LinkedList<Node> visited,
-			LinkedList<Node> adjNodeList) {
-
-		// list of current unvisited adjacent nodes
-		LinkedList<Node> adjNodes = adjNodeList;
-
-		// list of current nodes to be added if possible
-		LinkedList<Node> nodesToAdd = nodeListToAdd;
-
-		// list of visited nodes
-		LinkedList<Node> visitedNodes = visited;
-
-		if (nodesToAdd.size() > 1) {
-			for (int i = 1; i < nodesToAdd.size(); i++) {
-				// grab next node from nodesToAdd list and assign to curNode variable
-				Node curNode = nodesToAdd.get(i);
-
-				// create boolean found variable to track if a match was found
-				boolean found = false;
-
-				// iterate through current visited list and check the data of nodes for match
-				// and break if found.  (used toUpperCase for additional input testing)
-				for (int j = 0; j < visitedNodes.size(); j++) {
-					if (Character.toUpperCase(curNode.data) == Character.toUpperCase(visitedNodes.get(j).data)) {
-						found = true;
-						break;
-					}
-				}
-
-				// iterate through current adjNodes list and check the nodes for match and break
-				// if found
-				for (int j = 0; j < adjNodes.size(); j++) {
-					if (curNode.data == adjNodes.get(j).data && curNode.weight == adjNodes.get(j).weight) {
-						found = true;
-						break;
-					}
-				}
-
-				if (!found) {
-					// add node to adjNodes list if found is still false
-					adjNodes.add(curNode);
-				}
-
-			}
-		}
-
-		return adjNodeList;
-	}
-
-	/**
-	 * This method implements Prim's MST algorithm to calculate the
-	 * minumum spanning tree of a graph
-	 * 
-	 * @param node - starting node for Prim's MST
-	 * @return - integer value representing the calculated MST
-	 */
-	public int primMST(char node) {
-
-		// create listIterator for arrayList
-		ListIterator<LinkedList<Node>> nodeListsIter = nodeLists.listIterator();
-
-		// creation of variable to store/track calculated MST
-		int calcMST = 0;
-
-		// create an empty list to store visited nodes
-		LinkedList<Node> visited = new LinkedList<>();
-
-		// create an empty list for nodes adjacent nodes
-		LinkedList<Node> adjacentNodes = new LinkedList<>();
-
-		// get first node list from ArrayList
-		LinkedList<Node> currentNodeList = nodeListsIter.next();
-
-		// assign curNode to first node of first list
-		Node curNode = currentNodeList.getFirst();
-
-		// find initial node LinkedList
-		while (Character.toLowerCase(curNode.data) != Character.toLowerCase(node)) {
-			currentNodeList = nodeListsIter.next();
-			curNode = currentNodeList.getFirst();
-		}
-
-		// add first node to visited list
-		visited.add(curNode);
-
-		while (visited.size() < nodeLists.size()) {
-
-			// PRINT OUT OF VISITED NODES FOR DEBUGGING
-//			System.out.println("");
-//			System.out.print("Visited Node List: ");
-//			for (int i = 0; i < visited.size(); i++) {
-//				System.out.print(visited.get(i).data + " " + visited.get(i).weight + ", ");
-//			}
-
-			// add nodes in curNode LinkedList to adjacentNodesList
-			adjacentNodes = addNodes(currentNodeList, visited, adjacentNodes);
-
-			// PRINT OUT OF ADJACENT NODES FOR DEBUGGING
-//			System.out.println("");
-//			System.out.print("AdjNode List: ");
-//			for (int i = 0; i < adjacentNodes.size(); i++) {
-//				System.out.print(adjacentNodes.get(i).data + " " + adjacentNodes.get(i).weight + ", ");
-//			}
-
-			// PRINT OUT OF MINIMUM NODE FOR DEBUGGING
-//			System.out.println("");
-//			System.out.println("MinimumNode: " + adjacentNodes.get(findMin(adjacentNodes)).data + " "
-//					+ adjacentNodes.get(findMin(adjacentNodes)).weight);
-
-			// add weight to MST value
-			calcMST += adjacentNodes.get(findMin(adjacentNodes)).weight;
-
-			// add to visited list
-			visited.add(adjacentNodes.get(findMin(adjacentNodes)));
-
-			// update currentNodeList to last visited node
-			nodeListsIter = nodeLists.listIterator();
-			Node nextNode = visited.getLast();
-			currentNodeList = nodeListsIter.next();
-			curNode = currentNodeList.getFirst();
-
-			while (Character.toLowerCase(curNode.data) != Character.toLowerCase(nextNode.data)) {
-				currentNodeList = nodeListsIter.next();
-				curNode = currentNodeList.getFirst();
-			}
-
-			// remove minimum path node from adjacent list
-			adjacentNodes.remove(findMin(adjacentNodes));
-
-		}
-
-		return calcMST;
-	}
-
 	// START OF KRUSKAL'S MST METHODS/ALGORITHM
-	
-	
+
+	/**
+	 * This method creates a list of the edges present in a graph.
+	 * 
+	 * @return - list of edges in the graph
+	 */
 	private LinkedList<Node> getEdgeList() {
-		
+
 		// create an empty list to hold added srcNodes (node with weight of 0)
 		LinkedList<Node> addedNodeLists = new LinkedList<Node>();
 
@@ -401,64 +256,63 @@ public class Graph {
 				}
 			}
 
-			// add srcNode (weight = 0) to addedNodeLists list before starting next list
-			// loop
+			/**
+			 * add srcNode (weight = 0) to addedNodeLists list before starting next list
+			 * loop
+			 */
 			addedNodeLists.add(srcNode);
 		}
-//		// print out of edgeList & addNodeLists for debugging
-//		System.out.print("edgeList: ");
-//		for (int i = 0; i < edgeList.size(); i++) {
-//			System.out.print(edgeList.get(i).data + "(" + edgeList.get(i).weight + "), ");
-//		}
-//		System.out.println();
-//		System.out.print("addedNodeLists: ");
-//		for (int i = 0; i < addedNodeLists.size(); i++) {
-//			System.out.print(addedNodeLists.get(i).data + "(" + addedNodeLists.get(i).weight + "), ");
-//		}
-		
+
 		return edgeList;
 	}
-	
+
+	/**
+	 * This method calculates the minimum spanning tree using Kruskal's algorithm
+	 * 
+	 * @return - the calculated MST of the graph
+	 */
 	public int kruskalMST() {
 
 		// create calcMST variable to return
 		int calcMST = 0;
-		
+
 		// creation of edgeCounter variable to keep track of number of edges added
 		int edgeCounter = 0;
-		
+
 		// get list of edges using private class method getEdgeList()
 		LinkedList<Node> edgeList = getEdgeList();
-		
+
 		// create new array list of linkedList nodes for unionCycle checks
 		ArrayList<LinkedList<Node>> unionNodeLists = new ArrayList<>();
-		
+
 		// add source nodes to list (nodes with weight 0)
 		for (int i = 0; i < nodeLists.size(); i++) {
 			LinkedList<Node> currentList = new LinkedList<>();
 			currentList.add(nodeLists.get(i).getFirst());
 			unionNodeLists.add(currentList);
 		}
-		
-		//System.out.println("nodeLists size: " + nodeLists.size());
-		while ((edgeCounter < nodeLists.size()-1) && (edgeList.size() > 0)) {
-			
-			System.out.println();
-			System.out.print("edgeList: ");
-			for (int i = 0; i < edgeList.size(); i++) {
-				System.out.print(edgeList.get(i).data + "(" + edgeList.get(i).weight + ")" + edgeList.get(i).parent.data
-						+ edgeList.get(i).parent.weight + ", ");
-			}
-			
+
+		// System.out.println("nodeLists size: " + nodeLists.size());
+		while ((edgeCounter < nodeLists.size() - 1) && (edgeList.size() > 0)) {
+
+			// below print out for DEBUGGING ONLY
+//			System.out.println();
+//			System.out.print("edgeList: ");
+//			for (int i = 0; i < edgeList.size(); i++) {
+//				System.out.print(edgeList.get(i).data + "(" + edgeList.get(i).weight + ")" + edgeList.get(i).parent.data
+//						+ edgeList.get(i).parent.weight + ", ");
+//			}
+
+			// find the edge with the smallest weight and assign to variable
 			int min = findMin(edgeList);
 			Node minEdge = edgeList.get(min);
-			
+
 			// create variable for dstNode parent
 			Node dstParent = minEdge.parent;
-			
+
 			// creation of boolean variable for cycle being found
 			boolean cycleFound = false;
-			
+
 			// find unionNodeList for minEdgeParent
 			int unionNodeListIndex = 0;
 			for (int i = 0; i < unionNodeLists.size(); i++) {
@@ -467,22 +321,22 @@ public class Graph {
 					break;
 				}
 			}
-			
-			// check if dstNode.data in any unionNodeLists  node list
-			boolean dstNodeFound = false;
-			int dstNodeIndex = 0;
-			
-			for (int i = 0; i < unionNodeLists.size(); i ++) {
+
+			// check if dstNode.data in any unionNodeLists node list
+			boolean minEdgeFound = false;
+			int minEdgeIndex = 0;
+
+			for (int i = 0; i < unionNodeLists.size(); i++) {
 				for (int j = 1; j < unionNodeLists.get(i).size(); j++) {
 					if (minEdge.data == unionNodeLists.get(i).get(j).data) {
-						dstNodeFound = true;
-						dstNodeIndex = i;
+						minEdgeFound = true;
+						minEdgeIndex = i;
 						// check to ensure minEdge.parent.data does not equal data of set parent node
 						if (unionNodeLists.get(i).getFirst().data == minEdge.parent.data) {
 							cycleFound = true;
 						}
 						// check if dstNode.parent.data exists in list
-						for(int k = 1; k < unionNodeLists.get(i).size(); k++) {
+						for (int k = 1; k < unionNodeLists.get(i).size(); k++) {
 							if (minEdge.parent.data == unionNodeLists.get(i).get(k).data) {
 								cycleFound = true;
 								break;
@@ -497,58 +351,88 @@ public class Graph {
 					break;
 				}
 			}
-			
+
 			// check is dstParent.data is in any unionNodeLists node list
-			boolean dstParentFound = false;
+			boolean minEdgeParentFound = false;
 			int dstParentIndex = 0;
-			
-			for (int i = 0; i < unionNodeLists.size(); i ++) {
+
+			for (int i = 0; i < unionNodeLists.size(); i++) {
 				for (int j = 1; j < unionNodeLists.get(i).size(); j++) {
 					if (dstParent.data == unionNodeLists.get(i).get(j).data) {
-						dstParentFound = true;
+						minEdgeParentFound = true;
 						dstParentIndex = i;
 						break;
 					}
 				}
-				if (dstParentFound) {
+				if (minEdgeParentFound) {
 					break;
 				}
 			}
-			
+
+			// if cycleFound print statement of edge skipped (DEBUGGING ONLY)
 			if (cycleFound) {
-				System.out.println(minEdge.data + "(" + minEdge.weight + ")" + minEdge.parent.data + " EDGE SKIPPED");
-			}else if (!dstNodeFound && dstParentFound) {
+				// System.out.println(minEdge.data + "(" + minEdge.weight + ")" +
+				// minEdge.parent.data + " EDGE SKIPPED");
+
+				/**
+				 * if minEdge was not found but minEdgeParent.data was, add minEdge to parent
+				 * subset that minEdgeParent belongs to
+				 * 
+				 * PRINT STATEMENTS FOR DEBUGGING ONLY
+				 */
+			} else if (!minEdgeFound && minEdgeParentFound) {
 				unionNodeLists.get(dstParentIndex).add(minEdge);
 				calcMST += minEdge.weight;
 				edgeCounter++;
-				System.out.println();
-				System.out.println(minEdge.data + "(" + minEdge.weight + ")" + minEdge.parent.data + " Edge added:");
-			} else if (dstNodeFound && dstParentFound) {
-				unionNodeLists.get(dstNodeIndex).addAll(unionNodeLists.get(dstParentIndex));
+//				System.out.println();
+//				System.out.println(minEdge.data + "(" + minEdge.weight + ")" + minEdge.parent.data + " Edge added:");
+
+				/**
+				 * if the minEdge and minEdgeParent were found in subsets, but no cycle was
+				 * found, combine two subsets
+				 * 
+				 * PRINT STATEMENTS FOR DEBUGGING ONLY
+				 */
+			} else if (minEdgeFound && minEdgeParentFound) {
+				unionNodeLists.get(minEdgeIndex).addAll(unionNodeLists.get(dstParentIndex));
 				calcMST += minEdge.weight;
 				edgeCounter++;
-				System.out.println();
-				System.out.println(minEdge.data + "(" + minEdge.weight + ")" + minEdge.parent.data + " Edge added:");
-			} else if (!dstNodeFound && !dstParentFound) {
+//				System.out.println();
+//				System.out.println(minEdge.data + "(" + minEdge.weight + ")" + minEdge.parent.data + " Edge added:");
+
+				/**
+				 * If neither minEdge or minEdge.parent.data were found add minEdge to parent
+				 * subset.
+				 * 
+				 * PRINT STATEMENTS FOR DEBUGGING ONLY
+				 */
+			} else if (!minEdgeFound && !minEdgeParentFound) {
 				unionNodeLists.get(unionNodeListIndex).add(minEdge);
 				calcMST += minEdge.weight;
 				edgeCounter++;
-				System.out.println();
-				System.out.println(minEdge.data + "(" + minEdge.weight + ")" + minEdge.parent.data + " Edge added:");
-			} else if (dstNodeFound && !dstParentFound) {
-				unionNodeLists.get(dstNodeIndex).add(minEdge);
+//				System.out.println();
+//				System.out.println(minEdge.data + "(" + minEdge.weight + ")" + minEdge.parent.data + " Edge added:");
+
+				/**
+				 * if minEdge was found but not minEdge.parent.data, add minEdge to subset
+				 * minEdge was found in
+				 * 
+				 * PRINT STATEMENTS FOR DEBUGGING ONLY
+				 */
+			} else if (minEdgeFound && !minEdgeParentFound) {
+				unionNodeLists.get(minEdgeIndex).add(minEdge);
 				calcMST += minEdge.weight;
 				edgeCounter++;
-				System.out.println();
-				System.out.println(minEdge.data + "(" + minEdge.weight + ")" + minEdge.parent.data + " Edge added:");
+//				System.out.println();
+//				System.out.println(minEdge.data + "(" + minEdge.weight + ")" + minEdge.parent.data + " Edge added:");
 			}
-			
+
 			// remove minEdge from edgeList
 			edgeList.remove(edgeList.get(findMin(edgeList)));
 		}
 		return calcMST;
 	}
-	
+
 	/**
 	 * Node class used to store the vertex name/data and the weight of the traversal
 	 * path( if not first node in list)
@@ -560,8 +444,8 @@ public class Graph {
 		Node parent;
 
 		/**
-		 * Creates a Node with a default weight of 0 and parent set to null. Only called when adding vertices
-		 * to graph
+		 * Creates a Node with a default weight of 0 and parent set to null. Only called
+		 * when adding vertices to graph
 		 * 
 		 * @param data - Node data letter/name
 		 */
@@ -572,8 +456,8 @@ public class Graph {
 		}
 
 		/**
-		 * Creates an adjacency node with the weight of the edge and a null parent
-		 * that gets added to a LinkedList via the addEdge method
+		 * Creates an adjacency node with the weight of the edge and a null parent that
+		 * gets added to a LinkedList via the addEdge method
 		 * 
 		 * @param data
 		 * @param weight - Node data letter/name
@@ -583,8 +467,7 @@ public class Graph {
 			this.weight = weight;
 			this.parent = null;
 		}
-		
-		
+
 		/**
 		 * this method is used to set the parentNode to the node that gets passed in
 		 * 
@@ -593,7 +476,7 @@ public class Graph {
 		public void setParent(Node node) {
 			this.parent = node;
 		}
-		
+
 	}
 
 }
