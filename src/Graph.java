@@ -560,24 +560,6 @@ public class Graph {
 						+ edgeList.get(i).parent.weight + ", ");
 			}
 			
-//			System.out.println();
-//			System.out.print("visitedNodes: ");
-//			for (int i = 0; i < visitedNodes.size(); i++) {
-//				System.out.print(visitedNodes.get(i).data + " (" + visitedNodes.get(i).weight + "), ");
-//			}
-			
-//			int min = findMin(edgeList);
-//			Node minEdge = edgeList.get(min);
-//			boolean minEdgeCycle = checkCycle(visitedNodes, minEdge);
-//			System.out.println();
-//			System.out.println("Edge checked: " + minEdge.data + "(" + minEdge.weight + ")= " + minEdgeCycle);
-//			if (minEdgeCycle == false) {
-//				//visitedNodes.add(minEdge);
-//				calcMST += minEdge.weight;
-//				edgeCounter++;
-//				//edgeList.remove(edgeList.get(findMin(edgeList)));
-//			}
-			
 			int min = findMin(edgeList);
 			Node minEdge = edgeList.get(min);
 			boolean minEdgeCycle = unionCycle(unionNodeLists, minEdge);
